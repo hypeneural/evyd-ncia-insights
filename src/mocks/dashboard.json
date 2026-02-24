@@ -1,0 +1,549 @@
+{
+  "today": "2026-02-24",
+  "campaign": {
+    "name": "Dia das Mães 2026",
+    "startDate": "2026-02-01",
+    "targetDate": "2026-05-10",
+    "daysLeft": 75,
+    "activeDays": 23
+  },
+  "kpis": {
+    "pedidos": {
+      "y2026": 0,
+      "y2025": 93,
+      "y2024": 119,
+      "y2023": 39
+    },
+    "receita2026": 0,
+    "ticketMedio": 0,
+    "leadTimeMediana": 0
+  },
+  "packages": [
+    {
+      "name": "Mamãe Coruja",
+      "price": 196,
+      "entry": 98,
+      "installments": "1x R$ 98,00",
+      "color": "hsl(160,45%,42%)",
+      "icon": "bird",
+      "sold": {
+        "y2026": 0,
+        "y2025": 59,
+        "y2024": 59,
+        "y2023": 31
+      },
+      "revenue2026": 0
+    },
+    {
+      "name": "Super Mãe",
+      "price": 450,
+      "entry": 120,
+      "installments": "até 3x R$ 110,00",
+      "color": "hsl(36,70%,48%)",
+      "icon": "star",
+      "sold": {
+        "y2026": 0,
+        "y2025": 31,
+        "y2024": 60,
+        "y2023": 8
+      },
+      "revenue2026": 0
+    },
+    {
+      "name": "A melhor mãe do mundo",
+      "price": 885,
+      "entry": 180,
+      "installments": "até 3x R$ 235,00",
+      "color": "hsl(340,55%,55%)",
+      "icon": "crown",
+      "sold": {
+        "y2026": 0,
+        "y2025": 3,
+        "y2024": 0,
+        "y2023": 0
+      },
+      "revenue2026": 0
+    }
+  ],
+  "goals": {
+    "pedidos": {
+      "target": 120,
+      "current": 0
+    },
+    "byPackage": [
+      {
+        "name": "Mamãe Coruja",
+        "target": 60,
+        "current": 0,
+        "color": "hsl(160,45%,42%)"
+      },
+      {
+        "name": "Super Mãe",
+        "target": 35,
+        "current": 0,
+        "color": "hsl(36,70%,48%)"
+      },
+      {
+        "name": "A melhor mãe do mundo",
+        "target": 5,
+        "current": 0,
+        "color": "hsl(340,55%,55%)"
+      }
+    ],
+    "fotosExtras": {
+      "target": 200,
+      "current": 0
+    },
+    "faturamento": {
+      "target": 35935,
+      "current": 0
+    },
+    "ensaios": {
+      "target": 100,
+      "current": 0
+    },
+    "campaignComparison": {
+      "y2025": 93,
+      "y2024": 119
+    }
+  },
+  "insights": {
+    "peakDays2025": [
+      {
+        "date": "28/02",
+        "count": 11
+      },
+      {
+        "date": "05/05",
+        "count": 10
+      },
+      {
+        "date": "30/04",
+        "count": 6
+      },
+      {
+        "date": "06/03",
+        "count": 4
+      },
+      {
+        "date": "03/04",
+        "count": 4
+      }
+    ],
+    "peakDays2024": [
+      {
+        "date": "09/03",
+        "count": 24
+      },
+      {
+        "date": "09/04",
+        "count": 6
+      },
+      {
+        "date": "18/04",
+        "count": 6
+      },
+      {
+        "date": "05/04",
+        "count": 5
+      },
+      {
+        "date": "06/04",
+        "count": 5
+      }
+    ],
+    "next7Days": {
+      "y2025": 14,
+      "y2024": 0
+    }
+  },
+  "charts": {
+    "daySeries": [
+      {
+        "date": "01/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "02/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "03/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "04/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "05/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "06/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "07/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "08/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "09/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "10/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "11/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "12/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "13/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "14/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "15/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "16/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "17/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "18/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "19/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "20/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "21/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "22/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "23/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      },
+      {
+        "date": "24/02",
+        "2024": 0,
+        "2025": 0,
+        "2026": 0
+      }
+    ],
+    "packageComparison": [
+      {
+        "name": "A melhor mãe do mundo",
+        "2024": 0,
+        "2025": 3,
+        "2026": 0
+      },
+      {
+        "name": "Mamãe Coruja",
+        "2024": 59,
+        "2025": 59,
+        "2026": 0
+      },
+      {
+        "name": "Super Mãe",
+        "2024": 60,
+        "2025": 31,
+        "2026": 0
+      }
+    ],
+    "leadTime": {
+      "stats": {
+        "y2025": {
+          "avg": 16,
+          "median": 7
+        },
+        "y2026": {
+          "avg": 0,
+          "median": 0
+        }
+      },
+      "buckets": [
+        {
+          "range": "0–3",
+          "2025": 21,
+          "2026": 0
+        },
+        {
+          "range": "4–7",
+          "2025": 26,
+          "2026": 0
+        },
+        {
+          "range": "8–14",
+          "2025": 11,
+          "2026": 0
+        },
+        {
+          "range": "15–30",
+          "2025": 17,
+          "2026": 0
+        },
+        {
+          "range": "31+",
+          "2025": 17,
+          "2026": 0
+        }
+      ]
+    },
+    "paymentDistribution": [
+      {
+        "method": "boleto",
+        "2024": 2,
+        "2025": 1,
+        "2026": 0
+      },
+      {
+        "method": "cartao",
+        "2024": 52,
+        "2025": 35,
+        "2026": 0
+      },
+      {
+        "method": "dinheiro",
+        "2024": 5,
+        "2025": 2,
+        "2026": 0
+      },
+      {
+        "method": "permuta",
+        "2024": 0,
+        "2025": 2,
+        "2026": 0
+      },
+      {
+        "method": "pix",
+        "2024": 85,
+        "2025": 66,
+        "2026": 0
+      }
+    ]
+  },
+  "ruler": [
+    {
+      "offset": -3,
+      "label": "-3",
+      "date": "21/02",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2026": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      }
+    },
+    {
+      "offset": -2,
+      "label": "-2",
+      "date": "22/02",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2026": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      }
+    },
+    {
+      "offset": -1,
+      "label": "-1",
+      "date": "23/02",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2026": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      }
+    },
+    {
+      "offset": 0,
+      "label": "Hoje",
+      "date": "24/02",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2026": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      }
+    },
+    {
+      "offset": 1,
+      "label": "+1",
+      "date": "25/02",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2026": null
+    },
+    {
+      "offset": 2,
+      "label": "+2",
+      "date": "26/02",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2026": null
+    },
+    {
+      "offset": 3,
+      "label": "+3",
+      "date": "27/02",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 2,
+        "accumTotal": 2,
+        "accumRevenue": 356.0,
+        "packages": {
+          "Mamãe Coruja": 2
+        }
+      },
+      "y2026": null
+    }
+  ]
+}

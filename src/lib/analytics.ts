@@ -109,18 +109,42 @@ export function customersNotIn2026(orders: Order[], customers: Customer[]) {
 export function todayRuler(orders: Order[], dayOffset: number[] = [-3, -2, -1, 0, 1, 2, 3]) {
   return dayOffset.map((offset) => {
     const d = addDays(TODAY, offset);
-    const getCount = (year: number) => {
-      const target = new Date(year, d.getMonth(), d.getDate());
-      const key = format(target, "yyyy-MM-dd");
-      return countByDay(filterByYear(orders, year)).get(key) || 0;
+
+    const getMetrics = (year: number) => {
+      const targetDate = new Date(year, d.getMonth(), d.getDate());
+      const dailyKey = format(targetDate, "yyyy-MM-dd");
+
+      // Daily orders
+      const yearOrders = filterByYear(orders, year);
+      const dailyOrders = yearOrders.filter(o => format(parseISO(o.createdAt), "yyyy-MM-dd") === dailyKey);
+
+      // Pacotes do dia
+      const packages: Record<string, number> = {};
+      dailyOrders.forEach(o => {
+        packages[o.packageName] = (packages[o.packageName] || 0) + 1;
+      });
+
+      // Campaign Accumulation (YTD for that year until targetDate)
+      const campaignStart = new Date(year, 1, 1); // 1st Feb
+      const accumOrders = filterByDateRange(yearOrders, campaignStart, targetDate);
+      const accumTotal = accumOrders.length;
+      const accumRevenue = sumRevenue(accumOrders);
+
+      return {
+        daily: dailyOrders.length,
+        accumTotal,
+        accumRevenue,
+        packages,
+      };
     };
+
     return {
       offset,
       label: offset === 0 ? "Hoje" : (offset > 0 ? `+${offset}` : String(offset)),
       date: format(d, "dd/MM"),
-      y2024: getCount(2024),
-      y2025: getCount(2025),
-      y2026: offset > 0 ? null : getCount(2026), // future = null
+      y2024: getMetrics(2024),
+      y2025: getMetrics(2025),
+      y2026: offset > 0 ? null : getMetrics(2026), // future = null
     };
   });
 }

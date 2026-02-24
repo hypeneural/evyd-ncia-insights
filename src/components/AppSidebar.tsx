@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, TrendingUp, Package, Camera, Users, Lightbulb, Settings, Heart,
+  LayoutDashboard, Users, Settings, Heart, LineChart
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -9,11 +9,8 @@ import {
 
 const items = [
   { title: "Visão Geral", url: "/", icon: LayoutDashboard },
-  { title: "Vendas", url: "/vendas", icon: TrendingUp },
-  { title: "Pacotes", url: "/pacotes", icon: Package },
-  { title: "Sessões", url: "/sessoes", icon: Camera },
   { title: "Clientes", url: "/clientes", icon: Users },
-  { title: "Insights", url: "/insights", icon: Lightbulb },
+  { title: "Reajustes", url: "/precificacao/reajustes", icon: LineChart },
 ];
 
 export function AppSidebar() {
