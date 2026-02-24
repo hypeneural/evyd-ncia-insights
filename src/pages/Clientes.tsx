@@ -11,7 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Copy, Phone, Search, UserCheck, TrendingUp, TrendingDown, Calendar, CreditCard, Camera, ShoppingBag, Star, Gift, Info } from "lucide-react";
+import { Copy, Phone, Search, UserCheck, TrendingUp, TrendingDown, Calendar, CreditCard, Camera, ShoppingBag, Star, Gift, Info, Heart, CalendarOff, UserX, Users, ArrowUpCircle, ArrowDownCircle, Clock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { ClientData } from "@/types/clientTypes";
 import clientsRaw from "@/mocks/clients.json";
@@ -30,29 +30,56 @@ function formatDate(d: string | null | undefined) {
   return `${day}/${m}/${y}`;
 }
 
-// ── Segment filters ──
-interface SegmentDef {
+// ── Filter definitions ──
+type FilterId = "todos" | "dia-das-maes" | "sem-2026" | "ativo-2026" | "sem-sessao" | "inativo" | "upgrade" | "downgrade";
+type DmSub = "all" | "recorrente" | "novo";
+
+interface FilterDef {
+  id: FilterId;
   label: string;
-  tag?: string;
-  filter?: (c: ClientData) => boolean;
   description: string;
+  icon: React.ReactNode;
+  hasSubFilters?: boolean;
 }
 
-const SEGMENTS: SegmentDef[] = [
-  { label: "Todos", description: "Exibe todos os clientes cadastrados, sem nenhum filtro aplicado." },
-  { label: "VIP", tag: "vip", description: "Clientes com gasto total acumulado ≥ R$ 2.000 em todos os pedidos (todas as campanhas)." },
-  { label: "Premium", tag: "premium", description: "Clientes com gasto total entre R$ 1.000 e R$ 1.999. Um degrau abaixo de VIP." },
-  { label: "Recorrente", tag: "recorrente", description: "Clientes que participaram de 3 ou mais campanhas de Dia das Mães. Alta fidelidade comprovada." },
-  { label: "Sem 2026", tag: "sem-2026", description: "Clientes que compraram em anos anteriores mas ainda NÃO têm nenhum pedido em 2026. Oportunidade de reativação." },
-  { label: "Ativo 2026", tag: "ativo-2026", description: "Clientes que já possuem pelo menos 1 pedido em 2026. Já converteram na campanha atual." },
-  { label: "Sem sessão", tag: "sem-sessao", description: "Clientes que têm pedido em 2026 mas ainda NÃO agendaram a data da sessão fotográfica. Precisam de follow-up." },
-  { label: "Inativo (+1 ano)", tag: "inativo", description: "Clientes cuja última sessão fotográfica foi há mais de 365 dias. Risco de churn — considere ações de reengajamento." },
-  { label: "Upgrade", tag: "upgrade", description: "Clientes cujo último pacote comprado foi MAIS CARO que o pacote anterior. Tendência de subida." },
-  { label: "Downgrade", tag: "downgrade", description: "Clientes cujo último pacote comprado foi MAIS BARATO que o anterior. Atenção: pode indicar insatisfação." },
-  { label: "Novo (1 DM)", tag: "novo", description: "Clientes que participaram de apenas 1 campanha de Dia das Mães. Primeira experiência — crucial para fidelizar." },
-  { label: "Dia das Mães", filter: (c) => c.kpis.mothers_day_count > 0, description: "Todos os clientes que participaram de pelo menos 1 campanha de Dia das Mães, em qualquer ano." },
-  { label: "Natal", filter: (c) => c.tags.some(t => t.startsWith("natal-")), description: "Todos os clientes que participaram de pelo menos 1 campanha de Natal, em qualquer ano." },
+const FILTERS: FilterDef[] = [
+  { id: "todos", label: "Todos", icon: <Users className="w-3.5 h-3.5" />, description: "Exibe todos os clientes cadastrados, sem nenhum filtro aplicado." },
+  { id: "dia-das-maes", label: "Dia das Mães", icon: <Heart className="w-3.5 h-3.5" />, description: "Clientes do Dia das Mães. Use os sub-filtros para refinar por ano, recorrência ou novos.", hasSubFilters: true },
+  { id: "sem-2026", label: "Sem 2026", icon: <CalendarOff className="w-3.5 h-3.5" />, description: "Clientes que compraram antes mas NÃO têm pedido em 2026. Oportunidade de reativação." },
+  { id: "ativo-2026", label: "Ativo 2026", icon: <Calendar className="w-3.5 h-3.5" />, description: "Clientes que já possuem pelo menos 1 pedido em 2026." },
+  { id: "sem-sessao", label: "Sem sessão", icon: <Camera className="w-3.5 h-3.5" />, description: "Têm pedido em 2026 mas sem sessão fotográfica agendada." },
+  { id: "inativo", label: "Cliente Inativo", icon: <Clock className="w-3.5 h-3.5" />, description: "Clientes sem sessão recente. Selecione o período de inatividade.", hasSubFilters: true },
+  { id: "upgrade", label: "Upgrade", icon: <ArrowUpCircle className="w-3.5 h-3.5" />, description: "Último pacote comprado foi MAIS CARO que o anterior." },
+  { id: "downgrade", label: "Downgrade", icon: <ArrowDownCircle className="w-3.5 h-3.5" />, description: "Último pacote comprado foi MAIS BARATO que o anterior." },
 ];
+
+// DM available years (detected from data)
+const DM_YEARS = [2025, 2024, 2023, 2022];
+
+// Inativo period presets
+const INATIVO_PRESETS = [
+  { label: "6 meses", days: 180 },
+  { label: "1 ano", days: 365 },
+  { label: "2 anos", days: 730 },
+  { label: "3 anos", days: 1095 },
+];
+
+// ── Recorrente streak logic ──
+function dmConsecutiveStreak(years: number[]): number {
+  if (years.length < 2) return 0;
+  const sorted = [...years].sort((a, b) => b - a); // desc
+  let streak = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === sorted[i - 1] - 1) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function isRecorrente(years: number[]): boolean {
+  // Must have at least 2024+2025 consecutive
+  return years.includes(2025) && years.includes(2024);
+}
 
 // ── Tag colors ──
 function tagColor(tag: string): string {
@@ -66,7 +93,6 @@ function tagColor(tag: string): string {
   if (tag === "sem-2026") return "bg-orange-500/20 text-orange-700 border-orange-500/40";
   if (tag === "ativo-2026") return "bg-teal-500/20 text-teal-700 border-teal-500/40";
   if (tag.startsWith("dia-das-maes")) return "bg-pink-500/15 text-pink-700 border-pink-500/30";
-  if (tag.startsWith("natal")) return "bg-red-500/15 text-red-700 border-red-500/30";
   return "bg-muted text-muted-foreground border-border";
 }
 
@@ -74,11 +100,11 @@ function tagColor(tag: string): string {
 const TAG_DESCRIPTIONS: Record<string, string> = {
   "vip": "Gasto total ≥ R$ 2.000 (todas as campanhas)",
   "premium": "Gasto total entre R$ 1.000 e R$ 1.999",
-  "recorrente": "Participou de 3+ campanhas Dia das Mães",
+  "recorrente": "Fez DM em pelo menos 2024+2025 consecutivos",
   "novo": "Participou de apenas 1 Dia das Mães",
   "upgrade": "Último pacote mais caro que o anterior",
   "downgrade": "Último pacote mais barato que o anterior",
-  "inativo": "Última sessão há mais de 365 dias",
+  "inativo": "Sem sessão recente",
   "sem-2026": "Comprou antes mas não tem pedido em 2026",
   "ativo-2026": "Já tem pedido em 2026",
   "sem-sessao": "Tem pedido 2026 mas sem sessão agendada",
@@ -87,8 +113,6 @@ const TAG_DESCRIPTIONS: Record<string, string> = {
 function tagDescription(tag: string): string | null {
   if (TAG_DESCRIPTIONS[tag]) return TAG_DESCRIPTIONS[tag];
   if (tag.startsWith("dia-das-maes-")) return `Participou do Dia das Mães ${tag.split("-").pop()}`;
-  if (tag.startsWith("natal-")) return `Participou do Natal ${tag.split("-").pop()}`;
-  // Generic campaign-year tags
   const match = tag.match(/^(.+)-(\d{4})$/);
   if (match) return `Participou de ${match[1]} em ${match[2]}`;
   return null;
@@ -136,19 +160,68 @@ function sortClients(list: ClientData[], key: SortKey): ClientData[] {
 
 export default function Clientes() {
   const [search, setSearch] = useState("");
-  const [segmentIdx, setSegmentIdx] = useState(0);
+  const [activeFilter, setActiveFilter] = useState<FilterId>("todos");
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [contacted, setContacted] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>("orders");
   const [page, setPage] = useState(0);
 
+  // DM sub-filters
+  const [dmYears, setDmYears] = useState<Set<number>>(new Set());
+  const [dmSub, setDmSub] = useState<DmSub>("all");
+
+  // Inativo period
+  const [inativoDays, setInativoDays] = useState(365);
+
+  const toggleDmYear = (year: number) => {
+    setDmYears(prev => {
+      const next = new Set(prev);
+      if (next.has(year)) next.delete(year);
+      else next.add(year);
+      return next;
+    });
+    setDmSub("all");
+    setPage(0);
+  };
+
+  const handleFilterChange = (id: FilterId) => {
+    setActiveFilter(id);
+    setPage(0);
+    if (id !== "dia-das-maes") { setDmYears(new Set()); setDmSub("all"); }
+    if (id !== "inativo") setInativoDays(365);
+  };
+
+  const currentFilterDef = FILTERS.find(f => f.id === activeFilter)!;
+
   const filtered = useMemo(() => {
-    const segment = SEGMENTS[segmentIdx];
     let result = clients.filter((c) => {
-      // segment check
-      if (segment.tag && !c.tags.includes(segment.tag)) return false;
-      if (segment.filter && !segment.filter(c)) return false;
-      // search
+      // Main filter
+      switch (activeFilter) {
+        case "todos": break;
+        case "vip": if (!c.tags.includes("vip")) return false; break;
+        case "premium": if (!c.tags.includes("premium")) return false; break;
+        case "sem-2026": if (!c.tags.includes("sem-2026")) return false; break;
+        case "ativo-2026": if (!c.tags.includes("ativo-2026")) return false; break;
+        case "sem-sessao": if (!c.tags.includes("sem-sessao")) return false; break;
+        case "upgrade": if (!c.tags.includes("upgrade")) return false; break;
+        case "downgrade": if (!c.tags.includes("downgrade")) return false; break;
+        case "inativo":
+          if (!c.kpis.days_since_last_session || c.kpis.days_since_last_session < inativoDays) return false;
+          break;
+        case "dia-das-maes":
+          if (c.kpis.mothers_day_count === 0) return false;
+          // DM sub-filters
+          if (dmSub === "recorrente" && !isRecorrente(c.kpis.mothers_day_years)) return false;
+          if (dmSub === "novo" && c.kpis.mothers_day_count !== 1) return false;
+          // Year filters (must have ALL selected years)
+          if (dmYears.size > 0) {
+            for (const y of dmYears) {
+              if (!c.kpis.mothers_day_years.includes(y)) return false;
+            }
+          }
+          break;
+      }
+      // Search
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -159,8 +232,20 @@ export default function Clientes() {
       }
       return true;
     });
+
+    // Special sorting for Recorrente: by streak length DESC, then total DM count DESC
+    if (activeFilter === "dia-das-maes" && dmSub === "recorrente") {
+      result.sort((a, b) => {
+        const sa = dmConsecutiveStreak(a.kpis.mothers_day_years);
+        const sb = dmConsecutiveStreak(b.kpis.mothers_day_years);
+        if (sb !== sa) return sb - sa;
+        return b.kpis.mothers_day_count - a.kpis.mothers_day_count;
+      });
+      return result;
+    }
+
     return sortClients(result, sortKey);
-  }, [search, segmentIdx, sortKey]);
+  }, [search, activeFilter, sortKey, dmYears, dmSub, inativoDays]);
 
   // Reset page when filters change
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -195,8 +280,8 @@ export default function Clientes() {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <p className="text-xs text-muted-foreground">VIP (≥R$2k)</p>
-              <p className="text-2xl font-bold">{clients.filter(c => c.tags.includes("vip")).length}</p>
+              <p className="text-xs text-muted-foreground">Dia das Mães</p>
+              <p className="text-2xl font-bold">{clients.filter(c => c.kpis.mothers_day_count > 0).length}</p>
             </CardContent>
           </Card>
           <Card>
@@ -207,31 +292,33 @@ export default function Clientes() {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <p className="text-xs text-muted-foreground">Recorrentes (3+ DM)</p>
-              <p className="text-2xl font-bold">{clients.filter(c => c.tags.includes("recorrente")).length}</p>
+              <p className="text-xs text-muted-foreground">Recorrentes (2+ DM consecutivos)</p>
+              <p className="text-2xl font-bold">{clients.filter(c => isRecorrente(c.kpis.mothers_day_years)).length}</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Segments */}
+        {/* Filters */}
         <TooltipProvider delayDuration={200}>
           <div className="flex flex-wrap gap-2">
-            {SEGMENTS.map((s, i) => (
-              <UITooltip key={i}>
+            {FILTERS.map((f) => (
+              <UITooltip key={f.id}>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={segmentIdx === i ? "default" : "outline"}
+                    variant={activeFilter === f.id ? "default" : "outline"}
                     size="sm"
-                    onClick={() => { setSegmentIdx(i); setPage(0); }}
-                    className="text-xs"
+                    onClick={() => handleFilterChange(f.id)}
+                    className="text-xs gap-1.5"
                   >
-                    {s.label}
+                    {f.icon}
+                    {f.label}
+                    {f.hasSubFilters && <span className="ml-0.5 opacity-60">▾</span>}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs text-xs p-3">
                   <div className="space-y-1">
-                    <p className="font-semibold">{s.label}</p>
-                    <p className="text-muted-foreground">{s.description}</p>
+                    <p className="font-semibold">{f.label}</p>
+                    <p className="text-muted-foreground">{f.description}</p>
                   </div>
                 </TooltipContent>
               </UITooltip>
@@ -239,13 +326,102 @@ export default function Clientes() {
           </div>
         </TooltipProvider>
 
-        {/* Active segment info */}
-        {segmentIdx > 0 && (
+        {/* DM Sub-Filters */}
+        {activeFilter === "dia-das-maes" && (
+          <div className="space-y-3">
+            {/* DM Sub-type */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">Tipo:</span>
+              {(["all", "recorrente", "novo"] as DmSub[]).map((sub) => {
+                const labels: Record<DmSub, string> = { all: "Todos DM", recorrente: "Recorrente", novo: "Novo (1 DM)" };
+                const descs: Record<DmSub, string> = {
+                  all: "Todos os clientes que fizeram Dia das Mães",
+                  recorrente: "Fez em 2024+2025 consecutivos. Prioriza quem tem mais anos seguidos (4y > 3y > 2y)",
+                  novo: "Participou de apenas 1 Dia das Mães. Primeira experiência.",
+                };
+                return (
+                  <UITooltip key={sub}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={dmSub === sub ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => { setDmSub(sub); setPage(0); }}
+                        className="text-xs h-7"
+                      >
+                        {labels[sub]}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs text-xs p-2">
+                      {descs[sub]}
+                    </TooltipContent>
+                  </UITooltip>
+                );
+              })}
+            </div>
+
+            {/* Year chips */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">Anos:</span>
+              {DM_YEARS.map((year) => {
+                const isSelected = dmYears.has(year);
+                const count = clients.filter(c => c.kpis.mothers_day_years.includes(year)).length;
+                return (
+                  <Button
+                    key={year}
+                    variant={isSelected ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => toggleDmYear(year)}
+                    className={`text-xs h-7 ${isSelected ? "bg-pink-600 hover:bg-pink-700" : ""}`}
+                  >
+                    {year} <span className="ml-1 opacity-60">({count})</span>
+                  </Button>
+                );
+              })}
+              {dmYears.size > 0 && (
+                <Button variant="ghost" size="sm" onClick={() => { setDmYears(new Set()); setPage(0); }} className="text-xs h-7 text-muted-foreground">
+                  Limpar
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Inativo Sub-Filters */}
+        {activeFilter === "inativo" && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Sem sessão há mais de:</span>
+            {INATIVO_PRESETS.map((preset) => (
+              <Button
+                key={preset.days}
+                variant={inativoDays === preset.days ? "default" : "outline"}
+                size="sm"
+                onClick={() => { setInativoDays(preset.days); setPage(0); }}
+                className="text-xs h-7"
+              >
+                {preset.label}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        {/* Active filter info */}
+        {activeFilter !== "todos" && (
           <div className="flex items-start gap-2 text-xs p-3 rounded-lg border bg-muted/30">
             <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
             <div>
-              <span className="font-semibold">{SEGMENTS[segmentIdx].label}:</span>{" "}
-              <span className="text-muted-foreground">{SEGMENTS[segmentIdx].description}</span>
+              <span className="font-semibold">{currentFilterDef.label}:</span>{" "}
+              <span className="text-muted-foreground">
+                {currentFilterDef.description}
+                {activeFilter === "dia-das-maes" && dmYears.size > 0 && (
+                  <> · Filtrando por: <strong>{[...dmYears].sort().join(", ")}</strong></>
+                )}
+                {activeFilter === "dia-das-maes" && dmSub === "recorrente" && (
+                  <> · Ordenado por streak consecutiva (4y → 3y → 2y)</>
+                )}
+                {activeFilter === "inativo" && (
+                  <> · Último ensaio há mais de <strong>{INATIVO_PRESETS.find(p => p.days === inativoDays)?.label}</strong></>
+                )}
+              </span>
             </div>
           </div>
         )}
@@ -286,6 +462,7 @@ export default function Clientes() {
                     <TableHead>WhatsApp</TableHead>
                     <TableHead className="text-center">Pedidos</TableHead>
                     <TableHead>Total Gasto</TableHead>
+                    <TableHead>Cliente Desde</TableHead>
                     <TableHead>Última Sessão</TableHead>
                     <TableHead>DM</TableHead>
                     <TableHead>Tags</TableHead>
@@ -306,6 +483,7 @@ export default function Clientes() {
                         <TableCell className="text-sm text-muted-foreground">{c.whatsapp || "—"}</TableCell>
                         <TableCell className="text-center text-sm font-semibold">{c.kpis.total_orders}</TableCell>
                         <TableCell className="text-sm font-medium">{formatBRL(c.kpis.total_spent)}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{formatDate(c.kpis.first_order_date)}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{formatDate(c.kpis.last_session_date)}</TableCell>
                         <TableCell className="text-center">
                           {c.kpis.mothers_day_count > 0 ? (

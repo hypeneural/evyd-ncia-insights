@@ -51,8 +51,8 @@ export interface DashboardData {
     };
 
     insights: {
-        peakDays2025: Array<{ date: string; count: number }>;
-        peakDays2024: Array<{ date: string; count: number }>;
+        peakDays2025: Array<{ date: string; fullDate?: string; count: number }>;
+        peakDays2024: Array<{ date: string; fullDate?: string; count: number }>;
         next7Days: { y2025: number; y2024: number };
     };
 

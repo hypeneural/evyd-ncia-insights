@@ -54,9 +54,17 @@ export default function Dashboard() {
     const acc: Record<string, number> = { "2024": 0, "2025": 0, "2026": 0 };
     return data.charts.daySeries.map(d => {
       ["2024", "2025", "2026"].forEach(y => {
-        acc[y] += (d[y] as number) || 0;
+        const val = d[y];
+        if (val !== null && val !== undefined) {
+          acc[y] += (val as number);
+        }
       });
-      return { date: d.date, "2024": acc["2024"], "2025": acc["2025"], "2026": acc["2026"] };
+      return {
+        date: d.date,
+        "2024": acc["2024"],
+        "2025": acc["2025"],
+        "2026": d["2026"] === null ? null : acc["2026"],
+      };
     });
   }, [data.charts.daySeries]);
 
@@ -322,15 +330,27 @@ export default function Dashboard() {
               <div className="rounded-lg border p-4 bg-card">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ background: YEAR_COLORS[2025] }} />
-                  <span className="text-sm font-semibold">Dias com Pico Histórico (2025)</span>
+                  <span className="text-sm font-semibold">Top 10 dias com mais pedidos (2025)</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground mb-3">Dias com mais pedidos em 2025 — oportunidade de concentrar ações</p>
-                <div className="flex flex-wrap gap-2">
-                  {insights.peakDays2025.map(d => (
-                    <Badge key={d.date} variant="secondary" className="text-xs px-2 py-1 font-mono">
-                      {d.date} <span className="ml-1 font-bold">({d.count})</span>
-                    </Badge>
-                  ))}
+                <p className="text-[10px] text-muted-foreground mb-3">Dias com mais pedidos DM em 2025 — oportunidade de concentrar ações nos mesmos períodos</p>
+                <div className="space-y-1.5">
+                  {insights.peakDays2025.map((d, i) => {
+                    const maxCount = insights.peakDays2025[0]?.count || 1;
+                    const widthPct = Math.max(8, (d.count / maxCount) * 100);
+                    return (
+                      <div key={d.date} className="flex items-center gap-2 text-xs">
+                        <span className={`w-5 text-right font-mono ${i < 3 ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>{i + 1}.</span>
+                        <span className="w-12 font-mono font-medium">{d.date}</span>
+                        <div className="flex-1 h-4 bg-muted/50 rounded overflow-hidden">
+                          <div
+                            className="h-full rounded transition-all"
+                            style={{ width: `${widthPct}%`, background: YEAR_COLORS[2025], opacity: i < 3 ? 0.8 : 0.4 }}
+                          />
+                        </div>
+                        <span className={`w-8 text-right font-mono ${i < 3 ? 'font-bold' : 'text-muted-foreground'}`}>{d.count}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -338,15 +358,27 @@ export default function Dashboard() {
               <div className="rounded-lg border p-4 bg-card">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ background: YEAR_COLORS[2024] }} />
-                  <span className="text-sm font-semibold">Dias com Pico Histórico (2024)</span>
+                  <span className="text-sm font-semibold">Top 10 dias com mais pedidos (2024)</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground mb-3">Dias com mais pedidos em 2024 — oportunidade de concentrar ações</p>
-                <div className="flex flex-wrap gap-2">
-                  {insights.peakDays2024.map(d => (
-                    <Badge key={d.date} variant="secondary" className="text-xs px-2 py-1 font-mono">
-                      {d.date} <span className="ml-1 font-bold">({d.count})</span>
-                    </Badge>
-                  ))}
+                <p className="text-[10px] text-muted-foreground mb-3">Dias com mais pedidos DM em 2024 — oportunidade de concentrar ações nos mesmos períodos</p>
+                <div className="space-y-1.5">
+                  {insights.peakDays2024.map((d, i) => {
+                    const maxCount = insights.peakDays2024[0]?.count || 1;
+                    const widthPct = Math.max(8, (d.count / maxCount) * 100);
+                    return (
+                      <div key={d.date} className="flex items-center gap-2 text-xs">
+                        <span className={`w-5 text-right font-mono ${i < 3 ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>{i + 1}.</span>
+                        <span className="w-12 font-mono font-medium">{d.date}</span>
+                        <div className="flex-1 h-4 bg-muted/50 rounded overflow-hidden">
+                          <div
+                            className="h-full rounded transition-all"
+                            style={{ width: `${widthPct}%`, background: YEAR_COLORS[2024], opacity: i < 3 ? 0.8 : 0.4 }}
+                          />
+                        </div>
+                        <span className={`w-8 text-right font-mono ${i < 3 ? 'font-bold' : 'text-muted-foreground'}`}>{d.count}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -425,7 +457,7 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-display">Distribuição de Pacotes</CardTitle>
-              <p className="text-xs text-muted-foreground">2025 vs 2026 (total)</p>
+              <p className="text-xs text-muted-foreground">2024 vs 2025 vs 2026 (total vendidos)</p>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>
@@ -435,6 +467,7 @@ export default function Dashboard() {
                   <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                   <Tooltip />
                   <Legend />
+                  <Bar dataKey="2024" fill={YEAR_COLORS[2024]} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="2025" fill={YEAR_COLORS[2025]} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="2026" fill={YEAR_COLORS[2026]} radius={[4, 4, 0, 0]} />
                 </BarChart>
