@@ -1,19 +1,23 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { KPICard } from "@/components/KPICard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider, Tooltip as UITooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { ArrowDown, ArrowUp, Minus, Camera, DollarSign, Package, CalendarDays, Crosshair, LineChart as LineChartIcon, ExternalLink, ShoppingCart, UserX } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, BarChart, Bar,
+  ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell,
 } from "recharts";
 import { format, addDays } from "date-fns";
 import { Target, Lightbulb, Bird, Crown, Heart } from "lucide-react";
+
+const PIE_COLORS = ["hsl(36,75%,50%)", "hsl(350,50%,65%)", "hsl(210,55%,58%)", "hsl(150,50%,50%)", "hsl(280,50%,60%)", "hsl(30,60%,55%)"];
 import { Progress } from "@/components/ui/progress";
 import type { DashboardData, RulerYearData } from "@/types/dashboardTypes";
 import dashboardRaw from "@/mocks/dashboard.json";
@@ -99,12 +103,20 @@ export default function Dashboard() {
               {campaign.name} · {format(today, "dd/MM/yyyy")}
             </p>
           </div>
-          <div className="hidden md:flex gap-1">
-            {[2024, 2025, 2026].map(y => (
-              <Badge key={y} variant="outline" className="text-xs" style={{ borderColor: YEAR_COLORS[y], color: YEAR_COLORS[y] }}>
-                {y}
-              </Badge>
-            ))}
+          <div className="hidden md:flex flex-col items-end gap-2">
+            <div className="flex gap-1">
+              {[2024, 2025, 2026].map(y => (
+                <Badge key={y} variant="outline" className="text-xs" style={{ borderColor: YEAR_COLORS[y], color: YEAR_COLORS[y] }}>
+                  {y}
+                </Badge>
+              ))}
+            </div>
+            <Link to="/precificacao/reajustes">
+              <Button variant="outline" size="sm" className="text-xs gap-1.5 h-7">
+                <LineChartIcon className="w-3.5 h-3.5" />
+                Reajustes
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -232,7 +244,7 @@ export default function Dashboard() {
             {/* Meta Global de Pedidos */}
             <div className="p-4 rounded-xl bg-primary/5 border border-primary/15">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-semibold">🎯 Meta Global de Pedidos</span>
+                <span className="text-sm font-semibold flex items-center gap-1.5"><Crosshair className="w-4 h-4 text-primary" />Meta Global de Pedidos</span>
                 <span className="text-xs text-muted-foreground">Ritmo: <strong className="text-foreground">{metaPedidosPace}/dia</strong></span>
               </div>
               <div className="flex items-end gap-3">
@@ -249,7 +261,7 @@ export default function Dashboard() {
 
             {/* Metas por Pacote */}
             <div>
-              <p className="text-sm font-semibold mb-3">📦 Meta por Pacote</p>
+              <p className="text-sm font-semibold mb-3 flex items-center gap-1.5"><Package className="w-4 h-4 text-primary" />Meta por Pacote</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {goals.byPackage.map(pg => {
                   const p = pct(pg.current, pg.target);
@@ -274,11 +286,11 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Grid de Metas Secundárias */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Grid de Metas Secundárias — 2 colunas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Fotos Extras */}
-              <div className="rounded-lg border p-3 bg-card">
-                <p className="text-xs font-semibold mb-2">📸 Fotos Extras</p>
+              <div className="rounded-lg border p-4 bg-card hover:shadow-md transition-shadow">
+                <p className="text-xs font-semibold mb-2 flex items-center gap-1.5"><Camera className="w-3.5 h-3.5 text-primary" />Fotos Extras</p>
                 <div className="flex items-baseline gap-1 mb-1">
                   <span className="text-xl font-bold">{goals.fotosExtras.current}</span>
                   <span className="text-xs text-muted-foreground">/ {goals.fotosExtras.target}</span>
@@ -289,26 +301,14 @@ export default function Dashboard() {
               </div>
 
               {/* Faturamento */}
-              <div className="rounded-lg border p-3 bg-card">
-                <p className="text-xs font-semibold mb-2">💰 Meta de Faturamento</p>
+              <div className="rounded-lg border p-4 bg-card hover:shadow-md transition-shadow">
+                <p className="text-xs font-semibold mb-2 flex items-center gap-1.5"><DollarSign className="w-3.5 h-3.5 text-primary" />Meta de Faturamento</p>
                 <div className="flex items-baseline gap-1 mb-1">
                   <span className="text-xl font-bold">{formatBRL(goals.faturamento.current)}</span>
                   <span className="ml-auto text-xs font-bold text-primary">{pct(goals.faturamento.current, goals.faturamento.target)}%</span>
                 </div>
                 <Progress value={pct(goals.faturamento.current, goals.faturamento.target)} className="h-1.5" />
                 <p className="text-[10px] text-muted-foreground mt-1">Meta: {formatBRL(goals.faturamento.target)} · Faltam {formatBRL(remaining(goals.faturamento.current, goals.faturamento.target))}</p>
-              </div>
-
-              {/* Ensaios */}
-              <div className="rounded-lg border p-3 bg-card">
-                <p className="text-xs font-semibold mb-2">🎬 Meta de Ensaios</p>
-                <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-xl font-bold">{goals.ensaios.current}</span>
-                  <span className="text-xs text-muted-foreground">/ {goals.ensaios.target}</span>
-                  <span className="ml-auto text-xs font-bold text-primary">{pct(goals.ensaios.current, goals.ensaios.target)}%</span>
-                </div>
-                <Progress value={pct(goals.ensaios.current, goals.ensaios.target)} className="h-1.5" />
-                <p className="text-[10px] text-muted-foreground mt-1">Faltam {remaining(goals.ensaios.current, goals.ensaios.target)} ensaios</p>
               </div>
             </div>
 
@@ -385,7 +385,7 @@ export default function Dashboard() {
 
             {/* Next 7 days forecast */}
             <div className="rounded-lg border p-4 bg-gradient-to-r from-blue-500/5 to-transparent">
-              <p className="text-sm font-semibold mb-1">📅 Próximos 7 dias ({format(today, "dd/MM")} – {format(addDays(today, 6), "dd/MM")})</p>
+              <p className="text-sm font-semibold mb-1 flex items-center gap-1.5"><CalendarDays className="w-4 h-4 text-blue-500" />Próximos 7 dias ({format(today, "dd/MM")} – {format(addDays(today, 6), "dd/MM")})</p>
               <p className="text-[10px] text-muted-foreground mb-3">Quantos pedidos foram feitos neste mesmo período em anos anteriores</p>
               <div className="flex gap-6">
                 <div className="flex items-center gap-2">
@@ -433,7 +433,7 @@ export default function Dashboard() {
                   <Legend />
                   <Line type="monotone" dataKey="2024" stroke={YEAR_COLORS[2024]} strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="2025" stroke={YEAR_COLORS[2025]} strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="2026" stroke={YEAR_COLORS[2026]} strokeWidth={2.5} dot={false} />
+                  <Line type="monotone" dataKey="2026" stroke={YEAR_COLORS[2026]} strokeWidth={2.5} dot={{ r: 3 }} connectNulls />
                 </LineChart>
               ) : (
                 <LineChart data={chartDisplayData}>
@@ -444,7 +444,7 @@ export default function Dashboard() {
                   <Legend />
                   <Line type="monotone" dataKey="2024" stroke={YEAR_COLORS[2024]} strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="2025" stroke={YEAR_COLORS[2025]} strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="2026" stroke={YEAR_COLORS[2026]} strokeWidth={2.5} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="2026" stroke={YEAR_COLORS[2026]} strokeWidth={2.5} dot={{ r: 3 }} connectNulls />
                 </LineChart>
               )}
             </ResponsiveContainer>
@@ -518,6 +518,177 @@ export default function Dashboard() {
                   <Bar dataKey="2026" fill={YEAR_COLORS[2026]} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Distribuição de Pacotes 2026 — Pizza */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-display flex items-center gap-2">
+                <Package className="w-5 h-5 text-primary" />
+                Pacotes 2026
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">Distribuição atual por pacote vendido em 2026</p>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const pieData = charts.packageComparison
+                  .map(p => ({ name: p.name, value: (p as any)["2026"] || 0 }))
+                  .filter(p => p.value > 0);
+                const total = pieData.reduce((s, p) => s + p.value, 0);
+                if (total === 0) return <p className="text-sm text-muted-foreground text-center py-8">Nenhum pacote vendido em 2026 ainda</p>;
+                return (
+                  <div className="flex items-center gap-4">
+                    <ResponsiveContainer width="55%" height={220}>
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          cx="50%" cy="50%"
+                          innerRadius={50} outerRadius={85}
+                          paddingAngle={3}
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          labelLine={false}
+                          style={{ fontSize: 10 }}
+                        >
+                          {pieData.map((_, idx) => (
+                            <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(v: number) => [`${v} vendidos`, "Qtd"]} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="flex-1 space-y-2">
+                      {pieData.map((p, idx) => (
+                        <div key={p.name} className="flex items-center gap-2 text-sm">
+                          <span className="w-3 h-3 rounded-full shrink-0" style={{ background: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                          <span className="flex-1 truncate font-medium">{p.name}</span>
+                          <span className="font-bold">{p.value}</span>
+                          <span className="text-xs text-muted-foreground">({Math.round((p.value / total) * 100)}%)</span>
+                        </div>
+                      ))}
+                      <div className="pt-2 border-t text-sm font-semibold flex justify-between">
+                        <span>Total</span>
+                        <span>{total} pacotes</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ═══ RECENT BUYERS & RECURRENT MISSING ═══ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          {/* Últimas Compras DM 2026 */}
+          <Card className="border-primary/20 overflow-hidden">
+            <CardHeader className="pb-3 bg-gradient-to-r from-primary/8 to-transparent">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-display flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
+                    <ShoppingCart className="w-4 h-4 text-primary" />
+                  </div>
+                  Últimas Compras DM 2026
+                </CardTitle>
+                <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">{data.recentBuyers.length} pedidos</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">Pedidos mais recentes de Dia das Mães 2026</p>
+            </CardHeader>
+            <CardContent className="pt-3">
+              {data.recentBuyers.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">Nenhuma compra DM 2026 ainda</p>
+              ) : (
+                <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+                  {data.recentBuyers.map((b, i) => (
+                    <div key={i} className="group flex items-center gap-3 p-3 rounded-xl border border-transparent hover:border-primary/20 hover:bg-primary/3 hover:shadow-md transition-all duration-200">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center text-sm font-bold shrink-0 group-hover:scale-110 transition-transform">
+                        {i + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold truncate">{b.name}</p>
+                          <Badge variant="outline" className="text-[10px] bg-pink-500/10 text-pink-700 border-pink-500/20 shrink-0">{b.dmCount}x DM</Badge>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                          <Package className="w-3 h-3" />
+                          <span className="font-medium">{b.package}</span>
+                          <span>·</span>
+                          <span>{b.total ? formatBRL(b.total) : ""}</span>
+                          <span>·</span>
+                          <CalendarDays className="w-3 h-3" />
+                          <span>{b.createdAt ? new Date(b.createdAt).toLocaleDateString("pt-BR") : ""}</span>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground mt-0.5">
+                          Cliente desde {b.clientSince ? new Date(b.clientSince).toLocaleDateString("pt-BR") : "—"}
+                        </div>
+                      </div>
+                      <a
+                        href={`https://evydencia.com/gestao/pedidos/${b.orderUuid}/detalhes`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 p-2 rounded-lg bg-primary/5 hover:bg-primary/15 transition-colors group-hover:bg-primary/10"
+                        title="Ver pedido no Evydência"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink className="w-4 h-4 text-primary" />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recorrentes que não compraram 2026 */}
+          <Card className="border-destructive/15 overflow-hidden">
+            <CardHeader className="pb-3 bg-gradient-to-r from-destructive/5 to-transparent">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-display flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                    <UserX className="w-4 h-4 text-destructive" />
+                  </div>
+                  Recorrentes Sem 2026
+                </CardTitle>
+                <Badge variant="outline" className="bg-destructive/5 text-destructive border-destructive/20 text-xs">{data.recurrentMissing.length} clientes</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">Clientes fiéis DM que ainda não compraram em 2026 — oportunidade de reativação!</p>
+            </CardHeader>
+            <CardContent className="pt-3">
+              {data.recurrentMissing.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">🎉 Todos os recorrentes já compraram!</p>
+              ) : (
+                <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+                  {data.recurrentMissing.map((m, i) => (
+                    <div key={i} className="group flex items-center gap-3 p-3 rounded-xl border border-transparent hover:border-destructive/15 hover:bg-destructive/3 hover:shadow-md transition-all duration-200">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-destructive/20 to-destructive/5 text-destructive flex items-center justify-center text-xs font-bold shrink-0 group-hover:scale-110 transition-transform">
+                        {m.dmCount}x
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate">{m.name}</p>
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                          {m.dmYears.map(y => (
+                            <Badge key={y} variant="outline" className="text-[10px] px-1.5 py-0" style={{ borderColor: YEAR_COLORS[y] || "#888", color: YEAR_COLORS[y] || "#888" }}>
+                              {y}
+                            </Badge>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-1">
+                          {m.lastPackage && (
+                            <>
+                              <Package className="w-3 h-3" />
+                              <span>Últ: {m.lastPackage}</span>
+                              <span>·</span>
+                            </>
+                          )}
+                          <span>Desde {m.clientSince ? new Date(m.clientSince).toLocaleDateString("pt-BR") : "—"}</span>
+                        </div>
+                      </div>
+                      <Heart className="w-4 h-4 text-muted-foreground/30 group-hover:text-destructive/50 transition-colors shrink-0" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

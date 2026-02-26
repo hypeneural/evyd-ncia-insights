@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, Settings, Heart, LineChart
+  LayoutDashboard, Users, Settings, Heart
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -10,7 +10,6 @@ import {
 const items = [
   { title: "Visão Geral", url: "/", icon: LayoutDashboard },
   { title: "Clientes", url: "/clientes", icon: Users },
-  { title: "Reajustes", url: "/precificacao/reajustes", icon: LineChart },
 ];
 
 export function AppSidebar() {

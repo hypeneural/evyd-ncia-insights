@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Copy, Phone, Search, UserCheck, TrendingUp, TrendingDown, Calendar, CreditCard, Camera, ShoppingBag, Star, Gift, Info, Heart, CalendarOff, UserX, Users, ArrowUpCircle, ArrowDownCircle, Clock } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Copy, Phone, Search, UserCheck, TrendingUp, TrendingDown, Calendar, CreditCard, Camera, ShoppingBag, Star, Gift, Info, Heart, CalendarOff, UserX, Users, ArrowUpCircle, ArrowDownCircle, Clock, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { ClientData } from "@/types/clientTypes";
 import clientsRaw from "@/mocks/clients.json";
@@ -31,7 +33,7 @@ function formatDate(d: string | null | undefined) {
 }
 
 // ── Filter definitions ──
-type FilterId = "todos" | "dia-das-maes" | "sem-2026" | "ativo-2026" | "sem-sessao" | "inativo" | "upgrade" | "downgrade";
+type FilterId = "todos" | "favoritos" | "dia-das-maes" | "sem-2026" | "ativo-2026" | "sem-sessao" | "inativo" | "upgrade" | "downgrade";
 type DmSub = "all" | "recorrente" | "novo";
 
 interface FilterDef {
@@ -44,6 +46,7 @@ interface FilterDef {
 
 const FILTERS: FilterDef[] = [
   { id: "todos", label: "Todos", icon: <Users className="w-3.5 h-3.5" />, description: "Exibe todos os clientes cadastrados, sem nenhum filtro aplicado." },
+  { id: "favoritos", label: "Favoritos", icon: <Star className="w-3.5 h-3.5" />, description: "Contatos marcados como favoritos para lista de disparo." },
   { id: "dia-das-maes", label: "Dia das Mães", icon: <Heart className="w-3.5 h-3.5" />, description: "Clientes do Dia das Mães. Use os sub-filtros para refinar por ano, recorrência ou novos.", hasSubFilters: true },
   { id: "sem-2026", label: "Sem 2026", icon: <CalendarOff className="w-3.5 h-3.5" />, description: "Clientes que compraram antes mas NÃO têm pedido em 2026. Oportunidade de reativação." },
   { id: "ativo-2026", label: "Ativo 2026", icon: <Calendar className="w-3.5 h-3.5" />, description: "Clientes que já possuem pelo menos 1 pedido em 2026." },
@@ -54,7 +57,7 @@ const FILTERS: FilterDef[] = [
 ];
 
 // DM available years (detected from data)
-const DM_YEARS = [2025, 2024, 2023, 2022];
+const DM_YEARS = [2026, 2025, 2024, 2023, 2022];
 
 // Inativo period presets
 const INATIVO_PRESETS = [
@@ -83,6 +86,7 @@ function isRecorrente(years: number[]): boolean {
 
 // ── Tag colors ──
 function tagColor(tag: string): string {
+  if (tag === "favorito") return "bg-amber-500/20 text-amber-700 border-amber-500/40";
   if (tag === "vip") return "bg-yellow-500/20 text-yellow-700 border-yellow-500/40";
   if (tag === "premium") return "bg-purple-500/20 text-purple-700 border-purple-500/40";
   if (tag === "recorrente") return "bg-green-500/20 text-green-700 border-green-500/40";
@@ -98,6 +102,7 @@ function tagColor(tag: string): string {
 
 // ── Tag descriptions (shown on hover) ──
 const TAG_DESCRIPTIONS: Record<string, string> = {
+  "favorito": "Marcado como favorito para lista de disparo",
   "vip": "Gasto total ≥ R$ 2.000 (todas as campanhas)",
   "premium": "Gasto total entre R$ 1.000 e R$ 1.999",
   "recorrente": "Fez DM em pelo menos 2024+2025 consecutivos",
@@ -119,7 +124,7 @@ function tagDescription(tag: string): string | null {
 }
 
 // ── Prioritize visible tags ──
-const PRIORITY_TAGS = ["vip", "premium", "recorrente", "novo", "upgrade", "downgrade", "inativo", "sem-2026", "ativo-2026", "sem-sessao"];
+const PRIORITY_TAGS = ["favorito", "vip", "premium", "recorrente", "novo", "upgrade", "downgrade", "inativo", "sem-2026", "ativo-2026", "sem-sessao"];
 function sortedTags(tags: string[]): string[] {
   const priority = tags.filter(t => PRIORITY_TAGS.includes(t));
   const campaigns = tags.filter(t => !PRIORITY_TAGS.includes(t));
@@ -128,6 +133,19 @@ function sortedTags(tags: string[]): string[] {
 
 // ── Pagination ──
 const PAGE_SIZE = 50;
+
+// ── localStorage helpers for favorites ──
+const FAVORITES_KEY = "crm-favorites";
+function loadFavorites(): Set<string> {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    if (raw) return new Set(JSON.parse(raw));
+  } catch { /* ignore */ }
+  return new Set();
+}
+function saveFavorites(favs: Set<string>) {
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favs]));
+}
 
 // ── Sort Options ──
 type SortKey = "orders" | "spent" | "name" | "last_session";
@@ -166,6 +184,28 @@ export default function Clientes() {
   const [sortKey, setSortKey] = useState<SortKey>("orders");
   const [page, setPage] = useState(0);
 
+  // Favorites (persisted in localStorage)
+  const [favorites, setFavorites] = useState<Set<string>>(loadFavorites);
+  const [sendListOpen, setSendListOpen] = useState(false);
+
+  // Persist favorites to localStorage on change
+  useEffect(() => {
+    saveFavorites(favorites);
+  }, [favorites]);
+
+  const toggleFavorite = useCallback((uuid: string) => {
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(uuid)) next.delete(uuid);
+      else next.add(uuid);
+      return next;
+    });
+  }, []);
+
+  const clearFavorites = useCallback(() => {
+    setFavorites(new Set());
+  }, []);
+
   // DM sub-filters
   const [dmYears, setDmYears] = useState<Set<number>>(new Set());
   const [dmSub, setDmSub] = useState<DmSub>("all");
@@ -198,6 +238,7 @@ export default function Clientes() {
       // Main filter
       switch (activeFilter) {
         case "todos": break;
+        case "favoritos": if (!favorites.has(c.uuid)) return false; break;
         case "vip": if (!c.tags.includes("vip")) return false; break;
         case "premium": if (!c.tags.includes("premium")) return false; break;
         case "sem-2026": if (!c.tags.includes("sem-2026")) return false; break;
@@ -245,7 +286,7 @@ export default function Clientes() {
     }
 
     return sortClients(result, sortKey);
-  }, [search, activeFilter, sortKey, dmYears, dmSub, inativoDays]);
+  }, [search, activeFilter, sortKey, dmYears, dmSub, inativoDays, favorites]);
 
   // Reset page when filters change
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -308,10 +349,15 @@ export default function Clientes() {
                     variant={activeFilter === f.id ? "default" : "outline"}
                     size="sm"
                     onClick={() => handleFilterChange(f.id)}
-                    className="text-xs gap-1.5"
+                    className={`text-xs gap-1.5 ${f.id === "favoritos" && favorites.size > 0 ? "ring-2 ring-amber-400/60" : ""}`}
                   >
                     {f.icon}
                     {f.label}
+                    {f.id === "favoritos" && favorites.size > 0 && (
+                      <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-[10px] bg-amber-500/20 text-amber-700 border-0">
+                        {favorites.size}
+                      </Badge>
+                    )}
                     {f.hasSubFilters && <span className="ml-0.5 opacity-60">▾</span>}
                   </Button>
                 </TooltipTrigger>
@@ -426,7 +472,7 @@ export default function Clientes() {
           </div>
         )}
 
-        {/* Search + Sort */}
+        {/* Search + Sort + Send List */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -447,6 +493,38 @@ export default function Clientes() {
               ))}
             </SelectContent>
           </Select>
+          {favorites.size > 0 && (
+            <>
+              <Button
+                size="sm"
+                className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white"
+                onClick={() => setSendListOpen(true)}
+              >
+                <Send className="h-3.5 w-3.5" />
+                Gerar Lista de Envio ({favorites.size})
+              </Button>
+              {clients.some(c => favorites.has(c.uuid) && c.tags.includes("dia-das-maes-2026")) && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5 text-pink-600 border-pink-300 hover:bg-pink-50 hover:text-pink-700"
+                  onClick={() => {
+                    const dm26Uuids = new Set(
+                      clients.filter(c => c.tags.includes("dia-das-maes-2026")).map(c => c.uuid)
+                    );
+                    setFavorites(prev => {
+                      const next = new Set(prev);
+                      for (const uuid of dm26Uuids) next.delete(uuid);
+                      return next;
+                    });
+                  }}
+                >
+                  <Gift className="h-3.5 w-3.5" />
+                  Remover DM 26
+                </Button>
+              )}
+            </>
+          )}
         </div>
 
         <p className="text-sm text-muted-foreground">{filtered.length} clientes encontrados</p>
@@ -458,6 +536,22 @@ export default function Clientes() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10 text-center">
+                      <Checkbox
+                        checked={pageClients.length > 0 && pageClients.every(c => favorites.has(c.uuid))}
+                        onCheckedChange={(checked) => {
+                          setFavorites(prev => {
+                            const next = new Set(prev);
+                            pageClients.forEach(c => {
+                              if (checked) next.add(c.uuid);
+                              else next.delete(c.uuid);
+                            });
+                            return next;
+                          });
+                        }}
+                        aria-label="Selecionar todos"
+                      />
+                    </TableHead>
                     <TableHead>Nome</TableHead>
                     <TableHead>WhatsApp</TableHead>
                     <TableHead className="text-center">Pedidos</TableHead>
@@ -471,15 +565,36 @@ export default function Clientes() {
                 </TableHeader>
                 <TableBody>
                   {pageClients.map((c) => {
-                    const visibleTags = sortedTags(c.tags).slice(0, 4);
-                    const extraTagCount = c.tags.length - visibleTags.length;
+                    const isFav = favorites.has(c.uuid);
+                    const clientTags = isFav ? ["favorito", ...c.tags] : c.tags;
+                    const visibleTags = sortedTags(clientTags).slice(0, 5);
+                    const extraTagCount = clientTags.length - visibleTags.length;
                     return (
                       <TableRow
                         key={c.uuid}
-                        className="cursor-pointer hover:bg-muted/50"
+                        className={`cursor-pointer hover:bg-muted/50 ${isFav ? "bg-amber-500/5" : ""}`}
                         onClick={() => setSelectedClient(c)}
                       >
-                        <TableCell className="font-medium text-sm max-w-[180px] truncate">{c.name}</TableCell>
+                        <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={isFav}
+                            onCheckedChange={() => toggleFavorite(c.uuid)}
+                            aria-label={`Favoritar ${c.name}`}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium text-sm max-w-[200px]">
+                          <div className="flex items-center gap-1.5">
+                            <span className="truncate">{c.name}</span>
+                            {c.tags.includes("dia-das-maes-2026") && (
+                              <UITooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-flex shrink-0"><Gift className="w-3.5 h-3.5 text-pink-500" /></span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">Comprou DM 2026</TooltipContent>
+                              </UITooltip>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell className="text-sm text-muted-foreground">{c.whatsapp || "—"}</TableCell>
                         <TableCell className="text-center text-sm font-semibold">{c.kpis.total_orders}</TableCell>
                         <TableCell className="text-sm font-medium">{formatBRL(c.kpis.total_spent)}</TableCell>
@@ -500,7 +615,7 @@ export default function Clientes() {
                                 return desc ? (
                                   <UITooltip key={t}>
                                     <TooltipTrigger asChild>
-                                      <Badge variant="outline" className={`text-[10px] cursor-help ${tagColor(t)}`}>{t}</Badge>
+                                      <span className="inline-flex"><Badge variant="outline" className={`text-[10px] cursor-help ${tagColor(t)}`}>{t}</Badge></span>
                                     </TooltipTrigger>
                                     <TooltipContent side="bottom" className="text-xs max-w-[200px] p-2">
                                       {desc}
@@ -558,10 +673,88 @@ export default function Clientes() {
           {selectedClient && <ClientDetail client={selectedClient} onCopyWhatsApp={handleCopyWhatsApp} onContact={handleContact} contacted={contacted} />}
         </SheetContent>
       </Sheet>
+
+      {/* ── Send List Modal ── */}
+      <Dialog open={sendListOpen} onOpenChange={setSendListOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="h-4 w-4" />
+              Lista de Envio — {favorites.size} contatos
+            </DialogTitle>
+            <DialogDescription>
+              Números de WhatsApp dos contatos favoritados, um por linha. Copie e cole na sua ferramenta de disparo.
+            </DialogDescription>
+          </DialogHeader>
+          <SendListContent
+            favorites={favorites}
+            clients={clients}
+            onClear={() => { clearFavorites(); setSendListOpen(false); }}
+            onClose={() => setSendListOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
 
+
+// ── Send List Content ──
+function SendListContent({
+  favorites,
+  clients,
+  onClear,
+  onClose,
+}: {
+  favorites: Set<string>;
+  clients: ClientData[];
+  onClear: () => void;
+  onClose: () => void;
+}) {
+  const phoneList = useMemo(() => {
+    return clients
+      .filter(c => favorites.has(c.uuid) && c.whatsapp)
+      .map(c => c.whatsapp)
+      .join("\n");
+  }, [favorites, clients]);
+
+  const totalWithPhone = clients.filter(c => favorites.has(c.uuid) && c.whatsapp).length;
+  const totalWithoutPhone = favorites.size - totalWithPhone;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(phoneList);
+    toast({ title: "Lista copiada!", description: `${totalWithPhone} números copiados para a área de transferência.` });
+  };
+
+  return (
+    <div className="space-y-4">
+      <textarea
+        readOnly
+        value={phoneList}
+        rows={Math.min(15, Math.max(5, totalWithPhone))}
+        className="w-full rounded-lg border bg-muted/30 p-3 text-sm font-mono resize-y focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+        onClick={(e) => (e.target as HTMLTextAreaElement).select()}
+      />
+      {totalWithoutPhone > 0 && (
+        <p className="text-xs text-orange-600">
+          ⚠ {totalWithoutPhone} contato(s) sem WhatsApp cadastrado (não incluído na lista).
+        </p>
+      )}
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={onClear}>
+          Limpar Favoritos
+        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onClose}>Fechar</Button>
+          <Button size="sm" className="gap-1.5 bg-amber-600 hover:bg-amber-700 text-white" onClick={handleCopy}>
+            <Copy className="h-3.5 w-3.5" />
+            Copiar tudo ({totalWithPhone})
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Client Detail Component ──
 function ClientDetail({

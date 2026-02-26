@@ -77,4 +77,22 @@ export interface DashboardData {
         y2025: RulerYearData;
         y2026: RulerYearData | null;
     }>;
+
+    recentBuyers: Array<{
+        name: string;
+        package: string;
+        clientSince: string | null;
+        dmCount: number;
+        orderUuid: string;
+        total: number;
+        createdAt: string | null;
+    }>;
+
+    recurrentMissing: Array<{
+        name: string;
+        dmYears: number[];
+        dmCount: number;
+        clientSince: string | null;
+        lastPackage: string | null;
+    }>;
 }
