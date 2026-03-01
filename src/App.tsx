@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Clientes from "./pages/Clientes";
 import NotFound from "./pages/NotFound";
 import Reajustes from "./pages/Reajustes";
+import Agenda from "./pages/Agenda";
 
 const queryClient = new QueryClient();
 
@@ -15,11 +16,12 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/clientes" element={<Clientes />} />
           <Route path="/precificacao/reajustes" element={<Reajustes />} />
+          <Route path="/agenda" element={<Agenda />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

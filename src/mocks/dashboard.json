@@ -1,21 +1,21 @@
 {
-  "today": "2026-02-26",
+  "today": "2026-02-27",
   "campaign": {
     "name": "Dia das Mães 2026",
     "startDate": "2026-02-25",
     "targetDate": "2026-05-10",
-    "daysLeft": 73,
-    "activeDays": 1
+    "daysLeft": 72,
+    "activeDays": 2
   },
   "kpis": {
     "pedidos": {
-      "y2026": 13,
+      "y2026": 21,
       "y2025": 93,
       "y2024": 119,
       "y2023": 39
     },
-    "receita2026": 3818.0,
-    "ticketMedio": 293.69,
+    "receita2026": 6329.0,
+    "ticketMedio": 301.38,
     "leadTimeMediana": 0
   },
   "packages": [
@@ -27,12 +27,12 @@
       "color": "hsl(160,45%,42%)",
       "icon": "bird",
       "sold": {
-        "y2026": 8,
+        "y2026": 14,
         "y2025": 59,
         "y2024": 59,
         "y2023": 31
       },
-      "revenue2026": 1568.0
+      "revenue2026": 2744.0
     },
     {
       "name": "Super Mãe",
@@ -42,12 +42,12 @@
       "color": "hsl(36,70%,48%)",
       "icon": "star",
       "sold": {
-        "y2026": 5,
+        "y2026": 6,
         "y2025": 31,
         "y2024": 60,
         "y2023": 8
       },
-      "revenue2026": 2250.0
+      "revenue2026": 2700.0
     },
     {
       "name": "A melhor mãe do mundo",
@@ -57,36 +57,36 @@
       "color": "hsl(340,55%,55%)",
       "icon": "crown",
       "sold": {
-        "y2026": 0,
+        "y2026": 1,
         "y2025": 3,
         "y2024": 0,
         "y2023": 0
       },
-      "revenue2026": 0
+      "revenue2026": 885.0
     }
   ],
   "goals": {
     "pedidos": {
       "target": 100,
-      "current": 13
+      "current": 21
     },
     "byPackage": [
       {
         "name": "Mamãe Coruja",
         "target": 60,
-        "current": 8,
+        "current": 14,
         "color": "hsl(160,45%,42%)"
       },
       {
         "name": "Super Mãe",
         "target": 35,
-        "current": 5,
+        "current": 6,
         "color": "hsl(36,70%,48%)"
       },
       {
         "name": "A melhor mãe do mundo",
         "target": 5,
-        "current": 0,
+        "current": 1,
         "color": "hsl(340,55%,55%)"
       }
     ],
@@ -96,7 +96,7 @@
     },
     "faturamento": {
       "target": 35935,
-      "current": 3818.0
+      "current": 6329.0
     },
     "ensaios": {
       "target": 100,
@@ -213,7 +213,7 @@
       }
     ],
     "next7Days": {
-      "y2025": 16,
+      "y2025": 17,
       "y2024": 0
     }
   },
@@ -229,13 +229,13 @@
         "date": "26/02",
         "2024": 0,
         "2025": 0,
-        "2026": 1
+        "2026": 6
       },
       {
         "date": "27/02",
         "2024": 0,
         "2025": 2,
-        "2026": null
+        "2026": 3
       },
       {
         "date": "28/02",
@@ -675,19 +675,19 @@
         "name": "A melhor mãe do mundo",
         "2024": 0,
         "2025": 3,
-        "2026": 0
+        "2026": 1
       },
       {
         "name": "Mamãe Coruja",
         "2024": 59,
         "2025": 59,
-        "2026": 8
+        "2026": 14
       },
       {
         "name": "Super Mãe",
         "2024": 60,
         "2025": 31,
-        "2026": 5
+        "2026": 6
       }
     ],
     "leadTime": {
@@ -740,7 +740,7 @@
         "method": "cartao",
         "2024": 52,
         "2025": 35,
-        "2026": 7
+        "2026": 11
       },
       {
         "method": "dinheiro",
@@ -758,7 +758,7 @@
         "method": "pix",
         "2024": 85,
         "2025": 66,
-        "2026": 6
+        "2026": 10
       }
     ]
   },
@@ -766,7 +766,7 @@
     {
       "offset": -3,
       "label": "-3",
-      "date": "23/02",
+      "date": "24/02",
       "y2024": {
         "daily": 0,
         "accumTotal": 0,
@@ -789,29 +789,6 @@
     {
       "offset": -2,
       "label": "-2",
-      "date": "24/02",
-      "y2024": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2025": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2026": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      }
-    },
-    {
-      "offset": -1,
-      "label": "-1",
       "date": "25/02",
       "y2024": {
         "daily": 0,
@@ -836,8 +813,8 @@
       }
     },
     {
-      "offset": 0,
-      "label": "Hoje",
+      "offset": -1,
+      "label": "-1",
       "date": "26/02",
       "y2024": {
         "daily": 0,
@@ -852,17 +829,18 @@
         "packages": {}
       },
       "y2026": {
-        "daily": 1,
-        "accumTotal": 13,
-        "accumRevenue": 3818.0,
+        "daily": 6,
+        "accumTotal": 18,
+        "accumRevenue": 5052.0,
         "packages": {
-          "Super Mãe": 1
+          "Super Mãe": 2,
+          "Mamãe Coruja": 4
         }
       }
     },
     {
-      "offset": 1,
-      "label": "+1",
+      "offset": 0,
+      "label": "Hoje",
       "date": "27/02",
       "y2024": {
         "daily": 0,
@@ -878,11 +856,19 @@
           "Mamãe Coruja": 2
         }
       },
-      "y2026": null
+      "y2026": {
+        "daily": 3,
+        "accumTotal": 21,
+        "accumRevenue": 6329.0,
+        "packages": {
+          "A melhor mãe do mundo": 1,
+          "Mamãe Coruja": 2
+        }
+      }
     },
     {
-      "offset": 2,
-      "label": "+2",
+      "offset": 1,
+      "label": "+1",
       "date": "28/02",
       "y2024": {
         "daily": 0,
@@ -903,8 +889,8 @@
       "y2026": null
     },
     {
-      "offset": 3,
-      "label": "+3",
+      "offset": 2,
+      "label": "+2",
       "date": "01/03",
       "y2024": {
         "daily": 0,
@@ -921,9 +907,99 @@
         }
       },
       "y2026": null
+    },
+    {
+      "offset": 3,
+      "label": "+3",
+      "date": "02/03",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 14,
+        "accumRevenue": 5383.0,
+        "packages": {}
+      },
+      "y2026": null
     }
   ],
   "recentBuyers": [
+    {
+      "name": "Emelly Ruani",
+      "package": "Mamãe Coruja",
+      "clientSince": "2024-12-16",
+      "dmCount": 1,
+      "orderUuid": "33709e7a-16fb-46af-a0e2-f7af52caecd4",
+      "total": 196.0,
+      "createdAt": "2026-02-27"
+    },
+    {
+      "name": "Jeisiane Benevenute Pacheco",
+      "package": "Mamãe Coruja",
+      "clientSince": "2022-06-28",
+      "dmCount": 1,
+      "orderUuid": "a93a229f-c0ed-4c83-8909-f8894f14fe28",
+      "total": 196.0,
+      "createdAt": "2026-02-27"
+    },
+    {
+      "name": "Caroline De Souza Rodrigues",
+      "package": "A melhor mãe do mundo",
+      "clientSince": "2022-08-08",
+      "dmCount": 1,
+      "orderUuid": "c533a286-68da-4ec0-8125-fdeb7c3c57bc",
+      "total": 885.0,
+      "createdAt": "2026-02-27"
+    },
+    {
+      "name": "Andreia Cristina Da Rocha",
+      "package": "Super Mãe",
+      "clientSince": "2023-05-11",
+      "dmCount": 2,
+      "orderUuid": "7d582b39-d02a-4996-aed9-4ff85c586da5",
+      "total": 450.0,
+      "createdAt": "2026-02-26"
+    },
+    {
+      "name": "Vanusa Provenci",
+      "package": "Mamãe Coruja",
+      "clientSince": "2025-11-26",
+      "dmCount": 1,
+      "orderUuid": "375db959-63bc-4bcd-9ef5-82bf56816b18",
+      "total": 196.0,
+      "createdAt": "2026-02-26"
+    },
+    {
+      "name": "Priscila Chinaldir Tessaro",
+      "package": "Mamãe Coruja",
+      "clientSince": "2025-10-07",
+      "dmCount": 1,
+      "orderUuid": "e26ac88f-5ebd-4f9a-8e0f-ff7e5e6aebb1",
+      "total": 196.0,
+      "createdAt": "2026-02-26"
+    },
+    {
+      "name": "Priscila Chinaldir Tessaro",
+      "package": "Mamãe Coruja",
+      "clientSince": "2025-10-07",
+      "dmCount": 1,
+      "orderUuid": "2cf0e9db-852b-4ce7-abc4-e21f2a65877a",
+      "total": 196.0,
+      "createdAt": "2026-02-26"
+    },
+    {
+      "name": "Ana Paula",
+      "package": "Mamãe Coruja",
+      "clientSince": "2025-09-26",
+      "dmCount": 1,
+      "orderUuid": "e91601ef-0faa-4984-b432-dd3736946963",
+      "total": 196.0,
+      "createdAt": "2026-02-26"
+    },
     {
       "name": "Thayse Pereira",
       "package": "Super Mãe",
@@ -939,78 +1015,6 @@
       "clientSince": "2025-04-14",
       "dmCount": 2,
       "orderUuid": "e80b9aa2-9b88-4291-b5ec-18de9ae9eb3f",
-      "total": 196.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Adriele Ferrareze",
-      "package": "Super Mãe",
-      "clientSince": "2025-04-14",
-      "dmCount": 2,
-      "orderUuid": "958fe0c6-f19f-4c62-86af-e65d3d1976ff",
-      "total": 450.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Tainara Medeiros",
-      "package": "Super Mãe",
-      "clientSince": "2025-04-07",
-      "dmCount": 2,
-      "orderUuid": "fba3cfde-47bf-4956-a8b6-9008dc1622fa",
-      "total": 450.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Mayara Rosina",
-      "package": "Super Mãe",
-      "clientSince": "2025-04-09",
-      "dmCount": 2,
-      "orderUuid": "c9819a1e-be89-414e-947e-7086f097f918",
-      "total": 450.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Mônica A J Zerede",
-      "package": "Mamãe Coruja",
-      "clientSince": "2022-12-05",
-      "dmCount": 1,
-      "orderUuid": "2302100e-1753-4e41-b117-6030318bf22b",
-      "total": 196.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Ana Cláudia Dos Santos",
-      "package": "Mamãe Coruja",
-      "clientSince": "2023-11-18",
-      "dmCount": 2,
-      "orderUuid": "28fd977d-f807-457b-8ffa-94eb68aa7303",
-      "total": 196.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Grazieli Santos Botelho",
-      "package": "Mamãe Coruja",
-      "clientSince": "2024-06-12",
-      "dmCount": 1,
-      "orderUuid": "63e7c4bc-99bb-4376-a083-7e2acbc52eac",
-      "total": 196.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Indianara Dalago",
-      "package": "Mamãe Coruja",
-      "clientSince": "2024-11-14",
-      "dmCount": 1,
-      "orderUuid": "5c78efba-8c25-40a9-ba73-2fa9b94c8b6d",
-      "total": 196.0,
-      "createdAt": "2026-02-25"
-    },
-    {
-      "name": "Luana Parisotto Balbinot",
-      "package": "Mamãe Coruja",
-      "clientSince": "2024-10-13",
-      "dmCount": 2,
-      "orderUuid": "21d008ef-19f1-4807-a066-a1d42a2f632d",
       "total": 196.0,
       "createdAt": "2026-02-25"
     }

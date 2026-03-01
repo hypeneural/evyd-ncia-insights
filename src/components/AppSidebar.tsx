@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, Settings, Heart
+  LayoutDashboard, Users, Settings, Heart, CalendarDays
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -10,6 +10,7 @@ import {
 const items = [
   { title: "Visão Geral", url: "/", icon: LayoutDashboard },
   { title: "Clientes", url: "/clientes", icon: Users },
+  { title: "Agenda", url: "/agenda", icon: CalendarDays },
 ];
 
 export function AppSidebar() {
