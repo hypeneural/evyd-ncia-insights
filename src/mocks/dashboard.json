@@ -1,22 +1,22 @@
 {
-  "today": "2026-02-27",
+  "today": "2026-03-04",
   "campaign": {
     "name": "Dia das Mães 2026",
     "startDate": "2026-02-25",
     "targetDate": "2026-05-10",
-    "daysLeft": 72,
-    "activeDays": 2
+    "daysLeft": 67,
+    "activeDays": 7
   },
   "kpis": {
     "pedidos": {
-      "y2026": 21,
+      "y2026": 23,
       "y2025": 93,
       "y2024": 119,
       "y2023": 39
     },
-    "receita2026": 6329.0,
-    "ticketMedio": 301.38,
-    "leadTimeMediana": 0
+    "receita2026": 6975.0,
+    "ticketMedio": 303.26,
+    "leadTimeMediana": 50
   },
   "packages": [
     {
@@ -27,12 +27,12 @@
       "color": "hsl(160,45%,42%)",
       "icon": "bird",
       "sold": {
-        "y2026": 14,
+        "y2026": 15,
         "y2025": 59,
         "y2024": 59,
         "y2023": 31
       },
-      "revenue2026": 2744.0
+      "revenue2026": 2940.0
     },
     {
       "name": "Super Mãe",
@@ -42,12 +42,12 @@
       "color": "hsl(36,70%,48%)",
       "icon": "star",
       "sold": {
-        "y2026": 6,
+        "y2026": 7,
         "y2025": 31,
         "y2024": 60,
         "y2023": 8
       },
-      "revenue2026": 2700.0
+      "revenue2026": 3150.0
     },
     {
       "name": "A melhor mãe do mundo",
@@ -68,19 +68,19 @@
   "goals": {
     "pedidos": {
       "target": 100,
-      "current": 21
+      "current": 23
     },
     "byPackage": [
       {
         "name": "Mamãe Coruja",
         "target": 60,
-        "current": 14,
+        "current": 15,
         "color": "hsl(160,45%,42%)"
       },
       {
         "name": "Super Mãe",
         "target": 35,
-        "current": 6,
+        "current": 7,
         "color": "hsl(36,70%,48%)"
       },
       {
@@ -96,11 +96,11 @@
     },
     "faturamento": {
       "target": 35935,
-      "current": 6329.0
+      "current": 6975.0
     },
     "ensaios": {
       "target": 100,
-      "current": 0
+      "current": 13
     },
     "campaignComparison": {
       "y2025": 93,
@@ -213,8 +213,8 @@
       }
     ],
     "next7Days": {
-      "y2025": 17,
-      "y2024": 0
+      "y2025": 12,
+      "y2024": 27
     }
   },
   "charts": {
@@ -241,31 +241,31 @@
         "date": "28/02",
         "2024": 0,
         "2025": 11,
-        "2026": null
+        "2026": 1
       },
       {
         "date": "01/03",
         "2024": 0,
         "2025": 1,
-        "2026": null
+        "2026": 0
       },
       {
         "date": "02/03",
         "2024": 0,
         "2025": 0,
-        "2026": null
+        "2026": 0
       },
       {
         "date": "03/03",
         "2024": 0,
         "2025": 0,
-        "2026": null
+        "2026": 1
       },
       {
         "date": "04/03",
         "2024": 0,
         "2025": 2,
-        "2026": null
+        "2026": 0
       },
       {
         "date": "05/03",
@@ -681,13 +681,13 @@
         "name": "Mamãe Coruja",
         "2024": 59,
         "2025": 59,
-        "2026": 14
+        "2026": 15
       },
       {
         "name": "Super Mãe",
         "2024": 60,
         "2025": 31,
-        "2026": 6
+        "2026": 7
       }
     ],
     "leadTime": {
@@ -697,8 +697,8 @@
           "median": 7
         },
         "y2026": {
-          "avg": 0,
-          "median": 0
+          "avg": 46,
+          "median": 50
         }
       },
       "buckets": [
@@ -720,12 +720,12 @@
         {
           "range": "15–30",
           "2025": 17,
-          "2026": 0
+          "2026": 3
         },
         {
           "range": "31+",
           "2025": 17,
-          "2026": 0
+          "2026": 10
         }
       ]
     },
@@ -740,7 +740,7 @@
         "method": "cartao",
         "2024": 52,
         "2025": 35,
-        "2026": 11
+        "2026": 12
       },
       {
         "method": "dinheiro",
@@ -758,7 +758,7 @@
         "method": "pix",
         "2024": 85,
         "2025": 66,
-        "2026": 10
+        "2026": 11
       }
     ]
   },
@@ -766,131 +766,6 @@
     {
       "offset": -3,
       "label": "-3",
-      "date": "24/02",
-      "y2024": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2025": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2026": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      }
-    },
-    {
-      "offset": -2,
-      "label": "-2",
-      "date": "25/02",
-      "y2024": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2025": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2026": {
-        "daily": 12,
-        "accumTotal": 12,
-        "accumRevenue": 3368.0,
-        "packages": {
-          "Mamãe Coruja": 8,
-          "Super Mãe": 4
-        }
-      }
-    },
-    {
-      "offset": -1,
-      "label": "-1",
-      "date": "26/02",
-      "y2024": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2025": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2026": {
-        "daily": 6,
-        "accumTotal": 18,
-        "accumRevenue": 5052.0,
-        "packages": {
-          "Super Mãe": 2,
-          "Mamãe Coruja": 4
-        }
-      }
-    },
-    {
-      "offset": 0,
-      "label": "Hoje",
-      "date": "27/02",
-      "y2024": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2025": {
-        "daily": 2,
-        "accumTotal": 2,
-        "accumRevenue": 356.0,
-        "packages": {
-          "Mamãe Coruja": 2
-        }
-      },
-      "y2026": {
-        "daily": 3,
-        "accumTotal": 21,
-        "accumRevenue": 6329.0,
-        "packages": {
-          "A melhor mãe do mundo": 1,
-          "Mamãe Coruja": 2
-        }
-      }
-    },
-    {
-      "offset": 1,
-      "label": "+1",
-      "date": "28/02",
-      "y2024": {
-        "daily": 0,
-        "accumTotal": 0,
-        "accumRevenue": 0,
-        "packages": {}
-      },
-      "y2025": {
-        "daily": 11,
-        "accumTotal": 13,
-        "accumRevenue": 4964.0,
-        "packages": {
-          "Mamãe Coruja": 6,
-          "Super Mãe": 4,
-          "A melhor mãe do mundo": 1
-        }
-      },
-      "y2026": null
-    },
-    {
-      "offset": 2,
-      "label": "+2",
       "date": "01/03",
       "y2024": {
         "daily": 0,
@@ -906,11 +781,16 @@
           "Super Mãe": 1
         }
       },
-      "y2026": null
+      "y2026": {
+        "daily": 0,
+        "accumTotal": 22,
+        "accumRevenue": 6525.0,
+        "packages": {}
+      }
     },
     {
-      "offset": 3,
-      "label": "+3",
+      "offset": -2,
+      "label": "-2",
       "date": "02/03",
       "y2024": {
         "daily": 0,
@@ -924,10 +804,143 @@
         "accumRevenue": 5383.0,
         "packages": {}
       },
+      "y2026": {
+        "daily": 0,
+        "accumTotal": 22,
+        "accumRevenue": 6525.0,
+        "packages": {}
+      }
+    },
+    {
+      "offset": -1,
+      "label": "-1",
+      "date": "03/03",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 14,
+        "accumRevenue": 5383.0,
+        "packages": {}
+      },
+      "y2026": {
+        "daily": 1,
+        "accumTotal": 23,
+        "accumRevenue": 6975.0,
+        "packages": {
+          "Super Mãe": 1
+        }
+      }
+    },
+    {
+      "offset": 0,
+      "label": "Hoje",
+      "date": "04/03",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 2,
+        "accumTotal": 16,
+        "accumRevenue": 5980.0,
+        "packages": {
+          "Super Mãe": 1,
+          "Mamãe Coruja": 1
+        }
+      },
+      "y2026": {
+        "daily": 0,
+        "accumTotal": 23,
+        "accumRevenue": 6975.0,
+        "packages": {}
+      }
+    },
+    {
+      "offset": 1,
+      "label": "+1",
+      "date": "05/03",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 1,
+        "accumTotal": 17,
+        "accumRevenue": 6158.0,
+        "packages": {
+          "Mamãe Coruja": 1
+        }
+      },
+      "y2026": null
+    },
+    {
+      "offset": 2,
+      "label": "+2",
+      "date": "06/03",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 4,
+        "accumTotal": 21,
+        "accumRevenue": 7390.0,
+        "packages": {
+          "Super Mãe": 2,
+          "Mamãe Coruja": 2
+        }
+      },
+      "y2026": null
+    },
+    {
+      "offset": 3,
+      "label": "+3",
+      "date": "07/03",
+      "y2024": {
+        "daily": 0,
+        "accumTotal": 0,
+        "accumRevenue": 0,
+        "packages": {}
+      },
+      "y2025": {
+        "daily": 0,
+        "accumTotal": 21,
+        "accumRevenue": 7390.0,
+        "packages": {}
+      },
       "y2026": null
     }
   ],
   "recentBuyers": [
+    {
+      "name": "Janaina Antunes Boger",
+      "package": "Super Mãe",
+      "clientSince": "2021-11-06",
+      "dmCount": 1,
+      "orderUuid": "0c176a93-be2a-4b9f-ab71-61d0b7f538c2",
+      "total": 450.0,
+      "createdAt": "2026-03-03"
+    },
+    {
+      "name": "Camila Schüssler",
+      "package": "Mamãe Coruja",
+      "clientSince": "2024-07-08",
+      "dmCount": 1,
+      "orderUuid": "1144590e-e300-434c-a1c3-9ca004f4e91b",
+      "total": 196.0,
+      "createdAt": "2026-02-28"
+    },
     {
       "name": "Emelly Ruani",
       "package": "Mamãe Coruja",
@@ -999,24 +1012,6 @@
       "orderUuid": "e91601ef-0faa-4984-b432-dd3736946963",
       "total": 196.0,
       "createdAt": "2026-02-26"
-    },
-    {
-      "name": "Thayse Pereira",
-      "package": "Super Mãe",
-      "clientSince": "2021-10-29",
-      "dmCount": 3,
-      "orderUuid": "e09a520d-446f-4c55-9d47-455264740e84",
-      "total": 450.0,
-      "createdAt": "2026-02-26"
-    },
-    {
-      "name": "Adriele Ferrareze",
-      "package": "Mamãe Coruja",
-      "clientSince": "2025-04-14",
-      "dmCount": 2,
-      "orderUuid": "e80b9aa2-9b88-4291-b5ec-18de9ae9eb3f",
-      "total": 196.0,
-      "createdAt": "2026-02-25"
     }
   ],
   "recurrentMissing": [

@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, Settings, Heart, CalendarDays
+  LayoutDashboard, Users, Settings, Heart, CalendarDays, ShieldBan
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -11,6 +11,7 @@ const items = [
   { title: "Visão Geral", url: "/", icon: LayoutDashboard },
   { title: "Clientes", url: "/clientes", icon: Users },
   { title: "Agenda", url: "/agenda", icon: CalendarDays },
+  { title: "Blacklist", url: "/blacklist", icon: ShieldBan },
 ];
 
 export function AppSidebar() {
