@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Reajustes from "./pages/Reajustes";
 import Agenda from "./pages/Agenda";
 import Blacklist from "./pages/Blacklist";
+import BlacklistVerify from "./pages/BlacklistVerify";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/precificacao/reajustes" element={<Reajustes />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/blacklist" element={<Blacklist />} />
+          <Route path="/blacklist/verificar" element={<BlacklistVerify />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

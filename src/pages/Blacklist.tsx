@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
     ShieldBan, Search, Plus, Pencil, Trash2, RefreshCw, Phone, Users,
-    ShoppingBag, UserX, Loader2,
+    ShoppingBag, UserX, Loader2, ListChecks,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import clientsRaw from "@/mocks/clients.json";
 
 // ── API ──
-const API_BASE = "https://horarios.evydencia.com.br/api/blacklist.php";
+const API_BASE = "https://adm.evydencia.com.br/api/blacklist.php";
 
 interface BlacklistEntry {
     id: number;
@@ -75,8 +76,15 @@ function normalizeWhatsapp(raw: string): string {
     return raw.replace(/\D/g, "");
 }
 
+/** Retorna os últimos 8 dígitos do número (referência universal para comparação) */
+function last8(phone: string): string {
+    const digits = phone.replace(/\D/g, "");
+    return digits.slice(-8);
+}
+
 // ── Page ──
 export default function Blacklist() {
+    const navigate = useNavigate();
     const [entries, setEntries] = useState<BlacklistEntry[]>([]);
     const [stats, setStats] = useState<Stats>({ total: 0, with_order: 0, without_order: 0 });
     const [loading, setLoading] = useState(true);
@@ -102,6 +110,7 @@ export default function Blacklist() {
 
     // Sync
     const [syncing, setSyncing] = useState(false);
+    const [autoSyncDone, setAutoSyncDone] = useState(false);
 
     // ── Data loading ──
     const loadData = useCallback(async () => {
@@ -113,14 +122,28 @@ export default function Blacklist() {
             ]);
             if (listRes.success) setEntries(listRes.data);
             if (statsRes.success) setStats(statsRes.data);
+            return listRes.success ? listRes.data as BlacklistEntry[] : [];
         } catch {
             toast.error("Erro ao carregar blacklist");
+            return [];
         } finally {
             setLoading(false);
         }
     }, []);
 
-    useEffect(() => { loadData(); }, [loadData]);
+    // ── Auto-sync DM 2026 on page load (async, silent) ──
+    useEffect(() => {
+        loadData().then((currentEntries) => {
+            if (autoSyncDone || !currentEntries.length && entries.length === 0) {
+                // Still run auto-sync even with empty blacklist
+            }
+            if (!autoSyncDone) {
+                setAutoSyncDone(true);
+                autoSyncDM2026(currentEntries.length > 0 ? currentEntries : entries);
+            }
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // ── Filtered list ──
     const filtered = useMemo(() => {
@@ -222,52 +245,67 @@ export default function Blacklist() {
         }
     };
 
-    // ── Sync from clients.json ──
+    // ── Core sync logic (used by both auto-sync and manual button) ──
+    const syncDM2026 = async (currentEntries: BlacklistEntry[], silent = false) => {
+        // Get clients with DM 2026 tag and whatsapp
+        const dm2026Clients = (clientsRaw as any[]).filter(
+            (c) => c.tags?.includes("dia-das-maes-2026") && c.whatsapp,
+        );
+
+        // Compare using last 8 digits of phone number
+        const existingLast8 = new Set(currentEntries.map((e) => last8(e.whatsapp)));
+        const newClients = dm2026Clients.filter(
+            (c) => !existingLast8.has(last8(c.whatsapp)),
+        );
+
+        if (newClients.length === 0) {
+            if (!silent) toast.info("Nenhum novo cliente DM 2026 para inserir");
+            return 0;
+        }
+
+        let inserted = 0;
+        let errors = 0;
+
+        for (const client of newClients) {
+            try {
+                const res = await apiFetch("", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        whatsapp: normalizeWhatsapp(client.whatsapp),
+                        name: client.name || "",
+                        has_closed_order: true,
+                        observation: `Sincronizado automaticamente — DM 2026`,
+                    }),
+                });
+                if (res.success) inserted++;
+                else errors++;
+            } catch {
+                errors++;
+            }
+        }
+
+        if (inserted > 0) {
+            toast.success(
+                `Sincronização: ${inserted} novo(s) cliente(s) DM 2026 inserido(s)${errors > 0 ? `, ${errors} erro(s)` : ""}`,
+            );
+            loadData();
+        } else if (!silent && errors > 0) {
+            toast.error(`${errors} erro(s) durante sincronização`);
+        }
+
+        return inserted;
+    };
+
+    // Auto-sync on load (silent — no toast if nothing new)
+    const autoSyncDM2026 = async (currentEntries: BlacklistEntry[]) => {
+        await syncDM2026(currentEntries, true);
+    };
+
+    // Manual sync button
     const handleSync = async () => {
         setSyncing(true);
         try {
-            // Get clients with DM 2026 tag and whatsapp
-            const dm2026Clients = (clientsRaw as any[]).filter(
-                (c) => c.tags?.includes("dia-das-maes-2026") && c.whatsapp,
-            );
-
-            // Check which ones are already in the blacklist
-            const existingWhatsapps = new Set(entries.map((e) => e.whatsapp));
-            const newClients = dm2026Clients.filter(
-                (c) => !existingWhatsapps.has(normalizeWhatsapp(c.whatsapp)),
-            );
-
-            if (newClients.length === 0) {
-                toast.info("Nenhum novo cliente DM 2026 para inserir");
-                setSyncing(false);
-                return;
-            }
-
-            let inserted = 0;
-            let errors = 0;
-
-            for (const client of newClients) {
-                try {
-                    const res = await apiFetch("", {
-                        method: "POST",
-                        body: JSON.stringify({
-                            whatsapp: normalizeWhatsapp(client.whatsapp),
-                            name: client.name || "",
-                            has_closed_order: true,
-                            observation: `Sincronizado automaticamente — DM 2026`,
-                        }),
-                    });
-                    if (res.success) inserted++;
-                    else errors++;
-                } catch {
-                    errors++;
-                }
-            }
-
-            toast.success(
-                `Sincronização concluída: ${inserted} inserido(s)${errors > 0 ? `, ${errors} erro(s)` : ""}`,
-            );
-            loadData();
+            await syncDM2026(entries, false);
         } catch {
             toast.error("Erro durante sincronização");
         } finally {
@@ -289,7 +327,16 @@ export default function Blacklist() {
                             Gerencie números bloqueados para envio de propostas — Dia das Mães 2026
                         </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate("/blacklist/verificar")}
+                            className="gap-1.5"
+                        >
+                            <ListChecks className="h-3.5 w-3.5" />
+                            Verificação em Massa
+                        </Button>
                         <Button
                             variant="outline"
                             size="sm"
@@ -364,10 +411,15 @@ export default function Blacklist() {
                             <div>
                                 <Label className="text-xs">WhatsApp *</Label>
                                 <Input
-                                    placeholder="(48) 99999-9999"
+                                    placeholder="48999999999"
                                     value={formWhatsapp}
-                                    onChange={(e) => setFormWhatsapp(e.target.value)}
-                                    className="mt-1"
+                                    onChange={(e) => setFormWhatsapp(normalizeWhatsapp(e.target.value))}
+                                    onPaste={(e) => {
+                                        e.preventDefault();
+                                        const pasted = e.clipboardData.getData("text");
+                                        setFormWhatsapp(normalizeWhatsapp(pasted));
+                                    }}
+                                    className="mt-1 font-mono"
                                 />
                             </div>
                             <div>
